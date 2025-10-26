@@ -1,0 +1,19 @@
+{
+  "name": "financial-app",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node ace serve --watch",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@adonisjs/bodyparser": "10.1.0",
+    "@adonisjs/core": "6.9.0",
+    "@adonisjs/http-server": "7.5.0",
+    "reflect-metadata": "0.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "ts-node": "^10.9.2"
+  }
+}

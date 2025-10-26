@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "App/*": ["./app/*"],
+      "Config/*": ["./config/*"],
+      "#services": ["/.app/Services/*"],
+      "@ioc:Adonis/Core/*": ["./node_modules/@adonisjs/core/build/adonis-typings/*"],
+      "@ioc:Adonis/HttpServer/*": ["./node_modules/@adonisjs/http-server/build/adonis-typings/*"]
+    },
+    "rootDir": "./",
+    "outDir": "./build"
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules", "build"]
+}

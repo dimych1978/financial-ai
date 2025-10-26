@@ -1,0 +1,19 @@
+// config/bodyparser.ts
+const { defineConfig }= require( '@adonisjs/core/bodyparser')
+
+export default defineConfig({
+  allowedMethods: ['POST', 'PUT', 'PATCH', 'DELETE'],
+  form: {
+    convertEmptyStringsToNull: true,
+    types: ['application/x-www-form-urlencoded'],
+  },
+  json: {
+    convertEmptyStringsToNull: true,
+    types: ['application/json'],
+  },
+  multipart: {
+    autoProcess: true,
+    convertEmptyStringsToNull: true,
+    processManually: [],
+  },
+})

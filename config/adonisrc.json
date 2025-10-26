@@ -1,0 +1,10 @@
+{
+  "providers": [
+    "@adonisjs/core/providers/app_provider",
+    "@adonisjs/http-server/providers/http_server_provider"
+  ],
+  "preloads": [
+    "./start/routes",
+    "./start/kernel"
+  ]
+}
