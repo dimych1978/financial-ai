@@ -1,5 +1,17 @@
 // commands/start_server.ts
-const BaseCommand = require( '@adonisjs/core/ace')
+const BaseCommand = require('@adonisjs/core/ace')
+
+interface RouteContext {
+  request: {
+    body: () => any
+  }
+  response: {
+    status: (code: number) => {
+      json: (data: any) => void
+    }
+    json: (data: any) => void
+  }
+}
 
 export default class StartServer extends BaseCommand {
   public static commandName = 'start:server'
@@ -8,35 +20,39 @@ export default class StartServer extends BaseCommand {
   public async run() {
     this.logger.info('🚀 Starting Financial AI Consultant Server...')
 
-    const { Ignitor } = await import('@adonisjs/core')
+    const { Ignitor } = require('@adonisjs/core')
     const ignitor = new Ignitor(this.application.appRoot)
 
-    await ignitor.httpServer()
-      .start((http: any) => {
-        const router = http.container.use('Adonis/Core/Route')
-        
-        router.get('/', () => ({
-          service: 'Financial AI Consultant',
-          status: 'running',
-          version: '1.0'
-        }))
-        
-        router.post('/api/financial-consultation', async ({ request, response }: any) => {
-          const { message } = request.body()
-          
-          if (!message) {
-            return response.status(400).json({ error: 'Message is required' })
-          }
+    // Инициализируем приложение
+    await ignitor.application.init()
+    await ignitor.application.boot()
 
-          const advice = this.getFinancialAdvice(message)
-          return response.json({ 
-            success: true,
-            response: advice
-          })
-        })
-        
-        this.logger.success('✅ Server running on http://localhost:3333')
+    // Получаем роутер из контейнера
+    const router = ignitor.application.container.use('Adonis/Core/Route')
+    
+    router.get('/', () => ({
+      service: 'Financial AI Consultant',
+      status: 'running',
+      version: '1.0'
+    }))
+    
+    router.post('/api/financial-consultation', async (ctx: RouteContext) => {
+      const { message } = ctx.request.body()
+      
+      if (!message) {
+        return ctx.response.status(400).json({ error: 'Message is required' })
+      }
+
+      const advice = this.getFinancialAdvice(message)
+      return ctx.response.json({ 
+        success: true,
+        response: advice
       })
+    })
+
+    // Запускаем сервер
+    await ignitor.httpServer().start()
+    this.logger.success('✅ Server running on http://localhost:3333')
   }
 
   private getFinancialAdvice(message: string): string {
