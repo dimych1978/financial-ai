@@ -1,33 +1,52 @@
 // app/Controllers/Http/FinancialConsultationController.ts
-const { HttpContextContract } = require('@ioc:Adonis/Core/HttpContext')
+const GigaChatService = require('#services/GigaChatService')
 
-export default class FinancialConsultationController {
-  public async consult({ request, response }: typeof HttpContextContract) {
-    const { message } = request.only(['message'])
+interface CustomContext {
+  request: {
+    only(fields: string[]): Record<string, any>
+  }
+  response: {
+    badRequest(data: any): any
+    json(data: any): any
+    internalServerError(data: any): any
+  }
+  auth?: any
+  params?: any
+  session?: any
+  // добавьте другие свойства которые используете
+}
+
+class FinancialConsultationController {
+  async consult(ctx: CustomContext) {
+    const { request, response } = ctx
+    const { message, context } = request.only(['message', 'context'])
     
     if (!message) {
-      return response.badRequest({ error: 'Message is required' })
+      return response.badRequest({ 
+        success: false,
+        error: 'Message is required' 
+      })
     }
 
-    const advice = this.getFinancialAdvice(message)
-    
-    return response.json({ 
-      success: true,
-      response: advice 
-    })
-  }
-
-  private getFinancialAdvice(message: string): string {
-    const lowerMessage = message.toLowerCase()
-    
-    if (lowerMessage.includes('накопить')) {
-      return 'Для накопления: определите цель, срок и ежемесячную сумму. Используйте накопительные счета под 5-7% годовых.'
+    try {
+      const gigaChatService = new GigaChatService()
+      const aiResponse = await gigaChatService.sendMessage(message, context)
+      
+      return response.json({ 
+        success: true,
+        response: aiResponse,
+        timestamp: new Date().toISOString()
+      })
+    } catch (error: any) {
+      console.error('Controller error:', error)
+      
+      return response.internalServerError({ 
+        success: false,
+        error: 'Financial consultation service is temporarily unavailable',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      })
     }
-    
-    if (lowerMessage.includes('инвест')) {
-      return 'Для инвестиций: рассмотрите ОФЗ, ETF или ИИС с налоговыми вычетами.'
-    }
-    
-    return `Консультация по вопросу: "${message}". Рекомендуем вести бюджет и создавать финансовую подушку.`
   }
 }
+
+module.exports = FinancialConsultationController
