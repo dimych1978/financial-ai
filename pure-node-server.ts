@@ -1,25 +1,46 @@
-// pure-node-server.ts
+// pure-node-serverHttp.ts
+require('reflect-metadata')
+require('dotenv').config() // Загружаем .env
+
 const http = require('http')
 const url = require('url')
 
-console.log('🚀 Starting Financial AI Consultant (Pure Node.js)...')
+console.log('🚀 Starting Financial AI Consultant with GigaChat...')
+
+// Проверяем наличие обязательных переменных
+const requiredEnvVars = ['GIGACHAT_CLIENT_ID', 'GIGACHAT_CLIENT_SECRET']
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName])
+
+if (missingVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingVars)
+  console.log('💡 Please set them in your .env file')
+  process.exit(1)
+}
 
 const serverHttp = http.createServer(async (req: any, res: any) => {
   const parsedUrl = url.parse(req.url, true)
   const { pathname } = parsedUrl
   
   res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 200
+    res.end()
+    return
+  }
   
   // Health check
   if (req.method === 'GET' && pathname === '/') {
     res.end(JSON.stringify({
-      service: 'Financial AI Consultant',
+      service: 'Financial AI Consultant with GigaChat',
       status: 'running',
-      version: '1.0',
+      version: '2.0',
       framework: 'Node.js + TypeScript',
-      endpoints: {
-        consultation: 'POST /api/financial-consultation'
-      }
+      features: ['GigaChat API Integration', 'Financial Consulting']
     }))
     return
   }
@@ -32,25 +53,36 @@ const serverHttp = http.createServer(async (req: any, res: any) => {
       body += chunk.toString()
     })
     
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
-        const { message } = JSON.parse(body)
+        const { message, context } = JSON.parse(body)
         
         if (!message) {
           res.statusCode = 400
-          res.end(JSON.stringify({ error: 'Message is required' }))
+          res.end(JSON.stringify({ 
+            success: false,
+            error: 'Message is required' 
+          }))
           return
         }
+
+        // Используем GigaChatService
+        const GigaChatService = require('./app/Services/GigaChatService').default
+        const service = new GigaChatService()
+        const advice = await service.sendMessage(message, context)
         
-        const advice = getFinancialAdvice(message)
         res.end(JSON.stringify({
           success: true,
           response: advice,
           timestamp: new Date().toISOString()
         }))
       } catch (error) {
+        console.error('API Error:', error)
         res.statusCode = 500
-        res.end(JSON.stringify({ error: 'Invalid JSON' }))
+        res.end(JSON.stringify({ 
+          success: false,
+          error: 'Service temporarily unavailable'
+        }))
       }
     })
     return
@@ -58,32 +90,15 @@ const serverHttp = http.createServer(async (req: any, res: any) => {
   
   // Not found
   res.statusCode = 404
-  res.end(JSON.stringify({ error: 'Not found' }))
+  res.end(JSON.stringify({ 
+    success: false,
+    error: 'Not found' 
+  }))
 })
 
-function getFinancialAdvice(message: string): string {
-  const lower = message.toLowerCase()
-  
-  if (lower.includes('накопить') || lower.includes('копить')) {
-    return `Для накопления на "${message}":\n• Определите сумму и срок\n• Откладывайте 10-20% дохода\n• Используйте накопительный счет\n• Рассмотрите ИИС для вычетов`
-  }
-  
-  if (lower.includes('инвест')) {
-    return `Инвестиционные инструменты:\n• ОФЗ (гос. облигации) - низкий риск\n• ETF на индексы Мосбиржи\n• ИИС типа А (вычет 13%) или Б (освобождение от налогов)\n• Диверсификация портфеля`
-  }
-  
-  if (lower.includes('кредит') || lower.includes('заем')) {
-    return `Кредитная консультация:\n✓ Сравните предложения 3-5 банков\n✓ Нагрузка не более 40% от дохода\n✓ Внимательно изучите условия\n✓ Рассмотрите досрочное погашение`
-  }
-  
-  return `Консультация по вопросу: "${message}"\n\nОбщие финансовые рекомендации:\n• Ведите учет доходов и расходов\n• Создайте финансовую подушку безопасности 3-6 месяцев\n• Диверсифицируйте источники дохода\n• Регулярно откладывайте на долгосрочные цели\n• Пользуйтесь налоговыми вычетами`
-}
-
-const PORT = 3333
+const PORT = process.env.PORT || 3333
 serverHttp.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`)
-  console.log(`📊 Financial consultation API ready!`)
-  console.log(`💡 Test with:`)
-  console.log(`   curl http://localhost:${PORT}`)
-  console.log(`   curl -X POST http://localhost:${PORT}/api/financial-consultation -H "Content-Type: application/json" -d '{"message":"Как накопить на машину?"}'`)
+  console.log(`📊 GigaChat Financial Consultant ready!`)
+  console.log(`🔑 Using GigaChat API`)
 })

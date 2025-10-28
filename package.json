@@ -10,6 +10,7 @@
     "@adonisjs/bodyparser": "10.1.0",
     "@adonisjs/core": "6.9.0",
     "@adonisjs/http-server": "7.5.0",
+    "dotenv": "^17.2.3",
     "reflect-metadata": "0.1.13"
   },
   "devDependencies": {
