@@ -1,4 +1,3 @@
-// start/kernel.ts
 const server = require('@adonisjs/core/services/server')
 const router = require('@adonisjs/core/services/router')
 

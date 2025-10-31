@@ -1,4 +1,7 @@
 // pure-node-serverHttp.ts
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 require('reflect-metadata')
 require('dotenv').config() // Загружаем .env
 

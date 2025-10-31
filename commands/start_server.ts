@@ -1,4 +1,3 @@
-// commands/start_server.ts
 const BaseCommand = require('@adonisjs/core/ace')
 
 interface RouteContext {

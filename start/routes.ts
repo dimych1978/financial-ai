@@ -1,4 +1,3 @@
-// start/routes.ts
 const Route = require('@ioc:Adonis/Core/Route').default
 
 Route.get('/', async () => {

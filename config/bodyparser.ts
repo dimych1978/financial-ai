@@ -1,4 +1,3 @@
-// config/bodyparser.ts
 const { defineConfig }= require( '@adonisjs/core/bodyparser')
 
 export default defineConfig({

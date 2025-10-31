@@ -1,4 +1,3 @@
-// patched-ace.js
 require('reflect-metadata')
 
 // Патч для исправления Windows путей

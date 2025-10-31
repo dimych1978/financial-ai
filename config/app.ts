@@ -1,4 +1,3 @@
-// config/app.ts
 const { defineConfig } = require('@adonisjs/core/http')
 
 module.exports = defineConfig({

@@ -1,4 +1,3 @@
-// app/Controllers/Http/FinancialConsultationController.ts
 const GigaChatService = require('#services/GigaChatService')
 
 interface CustomContext {
@@ -13,7 +12,6 @@ interface CustomContext {
   auth?: any
   params?: any
   session?: any
-  // добавьте другие свойства которые используете
 }
 
 class FinancialConsultationController {
