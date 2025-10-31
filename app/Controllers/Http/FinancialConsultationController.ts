@@ -17,7 +17,7 @@ interface CustomContext {
 class FinancialConsultationController {
   async consult(ctx: CustomContext) {
     const { request, response } = ctx
-    const { message, context } = request.only(['message', 'context'])
+    const { message } = request.only(['message'])
     
     if (!message) {
       return response.badRequest({ 
@@ -28,7 +28,7 @@ class FinancialConsultationController {
 
     try {
       const gigaChatService = new GigaChatService()
-      const aiResponse = await gigaChatService.sendMessage(message, context)
+      const aiResponse = await gigaChatService.sendMessage(message)
       
       return response.json({ 
         success: true,

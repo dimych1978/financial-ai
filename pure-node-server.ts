@@ -58,7 +58,7 @@ const serverHttp = http.createServer(async (req: any, res: any) => {
     
     req.on('end', async () => {
       try {
-        const { message, context } = JSON.parse(body)
+        const { message } = JSON.parse(body)
         
         if (!message) {
           res.statusCode = 400
@@ -72,7 +72,7 @@ const serverHttp = http.createServer(async (req: any, res: any) => {
         // Используем GigaChatService
         const GigaChatService = require('./app/Services/GigaChatService').default
         const service = new GigaChatService()
-        const advice = await service.sendMessage(message, context)
+        const advice = await service.sendMessage(message)
         
         res.end(JSON.stringify({
           success: true,

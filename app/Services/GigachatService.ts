@@ -12,8 +12,7 @@ export default class GigaChatService {
   }
 
   public async sendMessage(
-    userMessage: string,
-    context?: string
+    userMessage: string
   ): Promise<string> {
     try {
       console.log('=== GigaChat Request ===');
